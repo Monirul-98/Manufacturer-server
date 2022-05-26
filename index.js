@@ -20,11 +20,20 @@ async function run() {
   try {
     await client.connect();
     const productCollection = client.db("manufacturer").collection("products");
+    const bookingCollection = client.db("manufacturer").collection("booking");
+
     app.get("/products", async (req, res) => {
       const query = {};
       const cursor = productCollection.find(query);
       const services = await cursor.toArray();
       res.send(services);
+    });
+
+    app.post("/booking", async (req, res) => {
+      const booking = req.body;
+
+      const result = await bookingCollection.insertOne(booking);
+      res.send({ success: true, result });
     });
   } finally {
   }
