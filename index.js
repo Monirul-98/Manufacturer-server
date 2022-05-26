@@ -21,12 +21,30 @@ async function run() {
     await client.connect();
     const productCollection = client.db("manufacturer").collection("products");
     const bookingCollection = client.db("manufacturer").collection("booking");
+    const userCollection = client.db("manufacturer").collection("users");
 
     app.get("/products", async (req, res) => {
       const query = {};
       const cursor = productCollection.find(query);
       const services = await cursor.toArray();
       res.send(services);
+    });
+
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const token = jwt.sign(
+        { email: email },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "1h" }
+      );
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.send({ result, token });
     });
 
     app.get("/booking", async (req, res) => {
