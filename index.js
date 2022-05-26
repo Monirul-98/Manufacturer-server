@@ -38,6 +38,18 @@ async function run() {
     const bookingCollection = client.db("manufacturer").collection("booking");
     const userCollection = client.db("manufacturer").collection("users");
 
+    const verifyAdmin = async (req, res, next) => {
+      const requester = req.decoded.email;
+      const requesterAccount = await userCollection.findOne({
+        email: requester,
+      });
+      if (requesterAccount.role === "admin") {
+        next();
+      } else {
+        res.status(403).send({ message: "Forbidden" });
+      }
+    };
+
     app.get("/products", async (req, res) => {
       const query = {};
       const cursor = productCollection.find(query);
