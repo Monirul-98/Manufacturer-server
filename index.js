@@ -53,8 +53,8 @@ async function run() {
     app.get("/products", async (req, res) => {
       const query = {};
       const cursor = productCollection.find(query);
-      const services = await cursor.toArray();
-      res.send(services);
+      const products = await cursor.toArray();
+      res.send(products);
     });
 
     app.post("/products", verifyJwt, verifyAdmin, async (req, res) => {
